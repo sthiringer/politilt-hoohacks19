@@ -1,4 +1,4 @@
-from python_goose.goose import Goose
+from goose import Goose
 
 class ArticleCrawler(object):
 	def __init__(self):
