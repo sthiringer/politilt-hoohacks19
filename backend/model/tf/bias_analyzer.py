@@ -39,9 +39,9 @@ class BiasAnalyzer(object):
 		#f = open('skipthoughts.pkl', 'rb')
 		# right now, we're using a unidirectional skip model;
 		# we can try the bidirectional model later
-		VOCAB_FILE = "/Users/jxmorris12/Projects/slant-dev/skip_thoughts_uni_2017_02_02/vocab.txt"
-		EMBEDDING_MATRIX_FILE = "/Users/jxmorris12/Projects/slant-dev/skip_thoughts_uni_2017_02_02/embeddings.npy"
-		CHECKPOINT_PATH = "/Users/jxmorris12/Projects/slant-dev/skip_thoughts_uni_2017_02_02/model.ckpt-501424"
+		VOCAB_FILE = "./tf/pretrained/skip_thoughts_uni_2017_02_02/vocab.txt"
+		EMBEDDING_MATRIX_FILE = "./tf/pretrained/skip_thoughts_uni_2017_02_02/embeddings.npy"
+		CHECKPOINT_PATH = "./tf/pretrained/skip_thoughts_uni_2017_02_02/model.ckpt-501424"
 
 		self.encoder.load_model(configuration.model_config(), vocabulary_file=VOCAB_FILE, embedding_matrix_file=EMBEDDING_MATRIX_FILE, checkpoint_path=CHECKPOINT_PATH)
 

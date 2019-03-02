@@ -1,1 +1,7 @@
-Flask==1.0.2
+Flask
+goose-extractor
+nltk
+requests
+sklearn
+tensorflow
+vaderSentiment==2.5

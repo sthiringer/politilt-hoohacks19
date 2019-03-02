@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Directory to download the pretrained models to.
-PRETRAINED_MODELS_DIR="pretrained/"
+PRETRAINED_MODELS_DIR="tf/pretrained/"
 
 mkdir -p ${PRETRAINED_MODELS_DIR}
 cd ${PRETRAINED_MODELS_DIR}
