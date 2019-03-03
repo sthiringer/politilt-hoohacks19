@@ -1,4 +1,4 @@
-# Slant Backend
+## Slant Backend
 
 ### Installing Dependencies
 
@@ -15,7 +15,7 @@ nltk.download('punkt')
 ```
 
 ### Our Corpus
-We classified political bias using the [Ideological Books Corpus](https://people.cs.umass.edu/~miyyer/ibc/). This dataset contains labeled data related to American politics. Specifically, it has 2025 liberal sentences, 1701 conservative sentences, and 600 neutral sentences. They were labeled by a political science expert
+We classified political bias using the [Ideological Books Corpus](https://people.cs.umass.edu/~miyyer/ibc/). This dataset contains labeled data related to American politics. A political science expert labeled sentences from books and magazines written by authors with known ideologies. Specifically, it has 2025 liberal sentences, 1701 conservative sentences, and 600 neutral sentences. Each sentence was labeled by a political science expert.
 
 ### Running the App
 To run dev Flask Server: `python -m flask run`
