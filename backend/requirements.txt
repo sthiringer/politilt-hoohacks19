@@ -1,0 +1,7 @@
+Flask
+goose-extractor
+nltk
+requests
+sklearn
+tensorflow
+vaderSentiment==2.5
