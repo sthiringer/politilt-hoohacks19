@@ -7,8 +7,11 @@ $(document).ready( function() {
 chrome.runtime.onMessage.addListener( function gotMessage( message, sender, sendResponse ) {
 		//Send HTTP request with this stuff to the server
 		var raw_HTML = document.documentElement.outerHTML;
+		var url = window.location.href;
 
-		$.post("https://theslantapp.com/score", raw_HTML, function(data){
+		let data_obj = {"text":raw_HTML, "source":url};
+
+		$.post("https://theslantapp.com/score", { data: JSON.stringify(data_obj)}, function(data){
 
 			var div1 = $("div:first");
 			console.log( div1 );
