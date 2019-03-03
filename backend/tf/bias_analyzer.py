@@ -3,8 +3,9 @@ from __future__ import division
 from __future__ import print_function
 from sklearn.svm import SVC
 import numpy as np
-import os.path
-#import sys
+import os
+# Set TF logging level to be lower
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 import scipy.spatial.distance as sd
 from skip_thoughts import configuration
 from skip_thoughts import encoder_manager

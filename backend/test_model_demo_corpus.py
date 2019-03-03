@@ -46,11 +46,11 @@ def main():
 	# do liberal articles
 	print '\n\tLiberal test articles:\n'
 	for url, text in get_liberal_articles():
-		get_bias_from_text(url, text, analyzer)
+		get_bias_from_text(url, text, analyzer, print_sentences=args.print_sentences)
 
 	print '\n\tConservative test articles:\n'
 	for url, text in get_conservative_articles():
-		get_bias_from_text(url, analyzer, print_sentences=args.print_sentences)
+		get_bias_from_text(url, text, analyzer, print_sentences=args.print_sentences)
 
 
 main()

@@ -1,5 +1,9 @@
 # Slant
 
+Inline-style: 
+![Slant Logo](logo.svg)
+
+
 ## Slant Frontend
 
 We made our frontend with the Chrome Extensions API.
