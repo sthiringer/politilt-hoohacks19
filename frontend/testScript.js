@@ -14,7 +14,6 @@ function myFunction() {
 	chrome.tabs.query( params, gotTabs );
 
 	function gotTabs( tabs ) {
-
 		
 		let msg = {
 			txt: "hello"
