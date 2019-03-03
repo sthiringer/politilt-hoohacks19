@@ -3,9 +3,13 @@ from flask import Flask, jsonify, request
 from random import random
 
 from tf.bias_analyzer import BiasAnalyzer
+from debug_bias_analyzer import DebugBiasAnalyzer
 
 app = Flask(__name__)
 bias_analyzer = BiasAnalyzer()
+debug_bias_analyzer = DebugBiasAnalyzer()
+
+APP_DEBUG_MODE = True
 
 @app.route('/')
 def index():
@@ -15,24 +19,23 @@ def index():
 def get_score():
     data = request.json
     if not data:
-        return 'Error: no body in request!', 500
+        return 'Error: no body in request!', 400
     elif 'text' not in data:
-        return 'Error: data needs text attrib', 500
+        return 'Error: data needs text attrib', 400
     elif 'source' not in data:
-        return 'Error: data needs source attrib', 500
+        return 'Error: data needs source attrib', 400
     # Get text from request
     text = data['text']
     src_url = data['source']
-    score, _ = bias_analyzer.get_article_bias(src_url, text)
+    if APP_DEBUG_MODE:
+        score = debug_bias_analyzer.score(src_url)
+    else:
+        score, _ = bias_analyzer.get_article_bias(src_url, text)
     return jsonify({ 'score': score })
 
 @app.route('/random_score', methods=['GET', 'POST'])
 def get_random_score():
-    return jsonify({ 'score': random_score() })
-
-def random_score():
-    sign = -1 if random() < 0.5 else 1
-    return random() * sign
+    return jsonify({ 'score': debug_bias_analyzer.random_score() })
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0')
