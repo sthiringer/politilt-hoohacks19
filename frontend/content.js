@@ -1,3 +1,5 @@
+$(document).ready( function() { 
+
 console.log( "Chrome extension go" );
 
 chrome.runtime.onMessage.addListener( function gotMessage( message, sender, sendResponse ) {
@@ -13,7 +15,14 @@ chrome.runtime.onMessage.addListener( function gotMessage( message, sender, send
 		// BAD SOLUTION
 		//document.body.style.marginTop = "75px";
 
-		//var div1 = document.querySelector( $div:first );
+		var div1 = $("div:first");
+		console.log( div1 );
+		div1.insertAdjacentHTML( 'beforebegin', '<div class="slantDiv"><div class="newDiv">Text</div></div>' );
+		var slantDiv = $("div:first");
+		slantDiv.style.color = 'FF00FF';
+		slantDiv.style.height = '100px';
+
+
 
 
 
@@ -45,3 +54,5 @@ chrome.runtime.onMessage.addListener( function gotMessage( message, sender, send
 
 
 })
+
+});

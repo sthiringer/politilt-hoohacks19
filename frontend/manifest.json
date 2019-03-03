@@ -10,12 +10,12 @@
  			"<all_urls>"
 
  		],
- 		"js": ["content.js"]
+ 		"js": [ "jquery-3.3.1.js", "content.js" ]
  	}
 
  ],
  "background": {
- 	"scripts": ["background.js"]
+ 	"scripts": [ "jquery-3.3.1.js", "background.js" ]
  },
  "permissions": ["tabs"],
 "browser_action": {
