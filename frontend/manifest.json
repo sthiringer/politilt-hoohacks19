@@ -5,7 +5,8 @@
  "version": "1.00",
  "author": "Jack Morris, Steve Thiringer, James Childress",
  "web_accessible_resources": [
- 	"SlantLogo.png"
+ 	"SlantLogo.png",
+ 	"logo.svg"
  ],
  "content_scripts": [
  	{
@@ -25,10 +26,4 @@
    "default_title": "Have a good day",
    "default_popup": "popup.html"
   }
-
-//  },
-// "chrome_url_overrides" : {
-//   "newtab": "newtab.html"
-// },
-//  "permissions": ["activeTab"]
 }
