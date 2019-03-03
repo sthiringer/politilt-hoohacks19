@@ -15,11 +15,11 @@ def index():
 def get_score():
     data = request.json
     if not data:
-        return 'Error: no body in request!'
+        return 'Error: no body in request!', 500
     elif 'text' not in data:
-        return 'Error: data needs text attrib'
+        return 'Error: data needs text attrib', 500
     elif 'source' not in data:
-        return 'Error: data needs source attrib'
+        return 'Error: data needs source attrib', 500
     # Get text from request
     text = data['text']
     src_url = data['source']

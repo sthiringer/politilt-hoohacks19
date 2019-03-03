@@ -38,6 +38,8 @@ flask run --host=0.0.0.0
 
 We configured the app for production by following this wonderful tutorial: [How To Serve Flask Applications with uWSGI and Nginx on Ubuntu 18.04](https://www.digitalocean.com/community/tutorials/how-to-serve-flask-applications-with-uswgi-and-nginx-on-ubuntu-18-04).
 
+Now, every time we update the backend, we can just run a `git pull` and then restart the running application via `sudo systemctl restart slantapp`.
+
 ### Inspiration
 
 We're thankful for a whole host of work that existed on this topic before we began the Slant project. Truly, we stand on the shoulders of giants. Specifically, we've based our work off of these two papers:
