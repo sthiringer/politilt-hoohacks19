@@ -14,7 +14,7 @@ import time
 
 class BiasAnalyzer(object):
 	def __init__(self, withSVM=False):
-		[lib, con, neu] = pickle.load(open('sampleData.pkl', 'rb'))
+		[lib, con, neu] = pickle.load(open('corpus.pkl', 'rb'))
 
 		self.bias_dict = {}
 
