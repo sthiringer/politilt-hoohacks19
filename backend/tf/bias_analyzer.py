@@ -4,14 +4,15 @@ from __future__ import print_function
 from sklearn.svm import SVC
 import numpy as np
 import os
-# Set TF logging level to be lower
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 import scipy.spatial.distance as sd
 from skip_thoughts import configuration
 from skip_thoughts import encoder_manager
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 import pickle
 import time
+
+# Set TF logging level to only log errors
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 class BiasScore:
 	def __init__(self, nn_bias, nn_similarity, sentiment):
@@ -128,7 +129,14 @@ class BiasAnalyzer(object):
 			self.clf = pickle.load(f)
 		#f.close()
 
-	def get_article_bias(self, article):
+		# Nice server-side caching
+		self.score_cache = {}
+
+	def get_article_bias(self, src_url, article):
+		# Check cache first
+		if src_url in self.score_cache:
+			return self.score_cache[src_url]
+		# otherwise process
 		sentences_list = content_to_sentences_list(article)
 		net_bias = []
 		bias_scores = []
@@ -138,7 +146,9 @@ class BiasAnalyzer(object):
 			bias_scores += bias
 			net_sentence_bias.update(sentence_bias)
 			net_bias.extend([bias[0], bias[1]])
-		return np.mean(net_bias), net_sentence_bias
+		answer = np.mean(net_bias), net_sentence_bias
+		self.score_cache[src_url] = answer
+		return answer
 
 	# @paragraphs is meant to be the output of the article_crawler
 	def get_paragraph_bias(self, paragraphs):
