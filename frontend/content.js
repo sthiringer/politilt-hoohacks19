@@ -162,7 +162,7 @@ var onGetScore = function(data){
 		"left":"50px",
 		"bottom":"30px",
 		"height":"35px",
-		"width":"100px",
+		"width":"110px",
 		"background-color":"black",	
 		"border-radius":"7px",
 		"color":"white",
