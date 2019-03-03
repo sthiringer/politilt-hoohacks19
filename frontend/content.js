@@ -64,7 +64,8 @@ var onGetScore = function(data){
 	var biasString = bias + "%";
 
 	var presentedBias = data.score * 100;
-	var pBias = presentedBias + "%";
+	var pBiasTrunc = presentedBias.toFixed(2);
+	var pBias = pBiasTrunc + "%";
 	var lor;
 	if ( presentedBias < 0 ) {
 		lor = "left";
