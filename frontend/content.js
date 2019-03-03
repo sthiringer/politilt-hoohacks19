@@ -51,12 +51,14 @@ chrome.runtime.onMessage.addListener( function gotMessage( message, sender, send
 			var lor;
 			if ( presentedBias < 0 ) {
 				lor = "left";
+				pBias = ( presentedBias * -1 ) + "%"; 
 			}
 			else if ( presentedBias > 0 ) {
 				lor = "right";
 			}
 			else {
-				lor = "moderate";
+				lor = "most part";
+				pBias = "extremeley low"
 			}
 
 			//Style response
