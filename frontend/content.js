@@ -1,14 +1,7 @@
 console.log( "Chrome extension go" );
 
-
-
-chrome.runtime.onMessage.addListener( gotMessage );
-
-function gotMessage( message, sender, sendResponse ) {
-	if ( message.txt == "hello" ) {
-		let paragraphs = document.getElementsByTagName( 'p' );
-		for ( elt of paragraphs ) {
-			elt.innerHTML = message.txt;
-		}
-	}
-}
+chrome.runtime.onMessage.addListener( function gotMessage( message, sender, sendResponse ) {
+	//Send HTTP request with this stuff to the server
+		var raw_HTML = document.documentElement.outerHTML;
+		console.log(raw_HTML);
+})
