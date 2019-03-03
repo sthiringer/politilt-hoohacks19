@@ -1,6 +1,7 @@
 Flask
 goose-extractor
 nltk
+redis
 requests
 sklearn
 tensorflow

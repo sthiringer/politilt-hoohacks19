@@ -4,6 +4,15 @@
 </p>
 <br><br>
 
+## What are we trying to solve?
+
+	The term Fake News has been a wildly-discussed talking point, potentially due to the 2016 election. While Slant feels many are aware that deceitful news exists, many seem to struggle with determining when their sources are biased. In fact, a December 2016 survey by the Pew Research Center suggests that 23 percent of U.S. adults have shared fake news, knowingly or unknowingly, with friends and others.
+	
+	Why is this happening? According to a study by The Knight Foundation, machine learning models have estimated that 33% of the 100 most-followed accounts in their postelection map are “bots”, or automated accounts. This means fake, deceitful and biased news can be shared by automated accounts in order to increase the likelihood that the stories reach your timeline. 
+
+	What can we do? Understanding our bias can allow for us to look more objectively at the world around us. When reading an article shared online, we need to ask ourselves: “Who wrote this?”, “What is the intent of this article?”, “Does this story make sense, or does it just align with my own political opinions?”, etc. By having Slant remind users of the biases on the websites they are visiting, the everyday person who wishes to develop their own political views can remain aware of the biases around them. 
+
+
 ## Slant Frontend
 
 We made our frontend with the Chrome Extensions API.
@@ -33,6 +42,10 @@ To run dev Flask Server: `python -m flask run`
 If you have the debugger disabled or trust the users on your network, you can make the server publicly available simply by adding --host=0.0.0.0 to the command line:
 
 flask run --host=0.0.0.0
+
+### Caching
+
+Our model is expensive, so we cache its results. We implement our caching using [Redis], a fast in-memory data store. We followed [this tutorial](https://www.digitalocean.com/community/tutorials/how-to-install-and-secure-redis-on-ubuntu-18-04) to initialize Redis on our cloud VM running Ubuntu 18.04. We use the [python-redis](https://redislabs.com/lp/python-redis/) package to communicate with Redis.
 
 ### Production
 
