@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from tf.bias_analyzer import BiasAnalyzer
-from article_crawler import ArticleCrawler
-import time
-import argparse
+import argparse, pickle, time
 
 ################ GET WEB CONTENT ###################
 # urls = [
@@ -12,16 +10,22 @@ import argparse
 	# ]
 
 ############## TESTING ARTICLE ANALYSIS ############
-def get_bias_for_url(url, bias_analyzer, article_crawler):
-	url = url.replace("'", "")
-	text = article_crawler.url_content(url)
-	if not text:
-		raise Exception('Could not parse text from url ' + url)
-	print('text:',text)
+def get_bias_from_text(url, text, bias_analyzer, print_sentences=False):
 	score, sentence_scores = bias_analyzer.get_article_bias(text)
 	print '\nURL:', url, '\n\nScore:', score
 	print
-	for s in sentence_scores: print s, sentence_scores[s]
+	if print_sentences:
+		for s in sentence_scores: 
+			print s, sentence_scores[s]
+
+def get_liberal_articles():
+	return load_pickle('test_corpus/liberal.p')
+
+def get_conservative_articles():
+	return load_pickle('test_corpus/conservative.p')
+
+def load_pickle(filename):
+	return pickle.load( open(filename, "rb") )
 
 ############# SVM TRAINING ##############
 '''
@@ -32,16 +36,21 @@ print(str(time.time() - start_time))
 def main():
 	# get args
 	parser = argparse.ArgumentParser()
-	parser.add_argument('url', metavar='url', type=str,
-	                    help='a url to parse')
 	parser.add_argument('--svm', metavar='svm', type=bool, default=False,
 	                    help='use SVM for classification')
+	parser.add_argument('--print_sentences', metavar='print_sentences', type=bool, default=False,
+	                    help='print all sentence_scores')
 	args = parser.parse_args()
-	# make crawler
-	crawler = ArticleCrawler()
 	# make bias thing
 	analyzer = BiasAnalyzer(withSVM=args.svm)
-	# get bias
-	get_bias_for_url(args.url, analyzer, crawler)
+	# do liberal articles
+	print '\n\tLiberal test articles:\n'
+	for url, text in get_liberal_articles():
+		get_bias_from_text(url, text, analyzer)
+
+	print '\n\tConservative test articles:\n'
+	for url, text in get_conservative_articles():
+		get_bias_from_text(url, analyzer, print_sentences=args.print_sentences)
+
 
 main()
