@@ -36,6 +36,8 @@ chrome.runtime.onMessage.addListener( function gotMessage( message, sender, send
 			$( slantDiv ).prepend($('<div>', {id:'bar'} ) );
 			$( slantDiv ).prepend($('<img>', {id:'SlantLogo', src:ImgURL} ) );
 			$( slantDiv ).prepend($('<p>', {id:'response'} ) );
+			$( slantDiv ).prepend($('<button>', {id:'saysWhoButton'} ) );
+			$('#saysWhoButton').html("Says who?")
 
 			//Bias calculations
 			var bias = 59 + ( data.score * 36 );
@@ -98,6 +100,24 @@ chrome.runtime.onMessage.addListener( function gotMessage( message, sender, send
 			 "left":"22%",
 			 "position":"absolute",
 			 "bottom":"30px"
+			})
+
+			//Style button
+			$('#saysWhoButton').css({
+				"position":"absolute",
+				"left":"50px",
+				"bottom":"30px",
+				"height":"35px",
+				"width":"100px",
+				"background-color":"black",	
+				"border-radius":"7px",
+				"color":"white"
+			})
+
+			$('#saysWhoButton').click(function(){
+				window.location.href = 'https://github.com/sthiringer/slant'
+			}).hover(function() {
+				$(this).css({'cursor':'pointer'});
 			})
 
 			$('#close').click(function(){

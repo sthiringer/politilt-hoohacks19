@@ -6,11 +6,6 @@ document.getElementById("analyze").onclick = function() {myFunction()};
 
 function myFunction() {
 
-
-
-
-	console.log( "poopy 3" );
-
 	let params = {
 		active: true,
 		currentWindow: true
@@ -26,11 +21,9 @@ function myFunction() {
 		}
 		console.log(tabs[0]);
 		chrome.tabs.sendMessage( tabs[0].id, msg );
-	}
+	}	
 
-
-
-	
+	window.close()
 }
 
 
