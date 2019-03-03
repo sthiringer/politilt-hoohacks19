@@ -2,6 +2,8 @@ $(document).ready( function() {
 
 console.log( "Chrome extension go" );
 
+
+
 chrome.runtime.onMessage.addListener( function gotMessage( message, sender, sendResponse ) {
 	//Send HTTP request with this stuff to the server
 		var raw_HTML = document.documentElement.outerHTML;
@@ -39,13 +41,41 @@ chrome.runtime.onMessage.addListener( function gotMessage( message, sender, send
 		$( slantDiv ).prepend($('<div>', {id:'triangledown'} ) );
 		$( slantDiv ).prepend($('<div>', {id:'bar'} ) );
 		$( slantDiv ).prepend($('<img>', {id:'SlantLogo', src:ImgURL} ) );
+		$( slantDiv ).prepend($('<p>', {id:'response'} ) );
+
+		var bias = 59 + ( getBias() * 36 );
+		var biasString = bias + "%";
+
+		var presentedBias = getBias() * 100;
+		var pBias = presentedBias + "%";
+		var lor;
+		if ( presentedBias < 0 ) {
+			lor = "left";
+		}
+		else if ( presentedBias > 0 ) {
+			lor = "right";
+		}
+		else {
+			lor = "moderate";
+		}
+
+		//Style response
+		$( "#response" ).append( "This site has a " + pBias + " bias for the " + lor + "." );
+		$( "#response" ).css( { 
+			"font-size":"18px",
+			"color":"Black",
+			"position":"absolute",
+			"left": "400px"
+		})
+
+
 
 		//Style triangledown
 		$( "#triangledown" ).css( { 
 			"border-left":"10px solid transparent",
 			"border-right":"10px solid transparent",
 			"border-top":"25px solid",
-			"left":"59%",
+			"left":biasString,
 			"top":"52%",
 			"width":"10px",
 			"position":"absolute"
@@ -73,6 +103,9 @@ chrome.runtime.onMessage.addListener( function gotMessage( message, sender, send
 		$('#close').click(function(){
 			$('#myModal').css({"display":"none"})
 		})
+
+		
+
 
 		//$('<img src="SlantLogo.png">').appendTo( slantDiv );
 
@@ -114,3 +147,7 @@ chrome.runtime.onMessage.addListener( function gotMessage( message, sender, send
 })
 
 });
+
+function getBias() {
+	return -1.0;
+}
