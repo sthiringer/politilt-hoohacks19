@@ -7,7 +7,9 @@ console.log( "Chrome extension go" );
 chrome.runtime.onMessage.addListener( function gotMessage( message, sender, sendResponse ) {
 	//Send HTTP request with this stuff to the server
 		var raw_HTML = document.documentElement.outerHTML;
-		console.log(raw_HTML);
+		$.post("https://theslantapp.com/random_score", function(data){
+			var score = data.score
+		})
 
 
 
@@ -156,5 +158,5 @@ chrome.runtime.onMessage.addListener( function gotMessage( message, sender, send
 });
 
 function getBias() {
-	return -1.0;
+	return score;
 }
