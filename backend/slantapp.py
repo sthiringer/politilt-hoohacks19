@@ -5,6 +5,7 @@ from random import random
 from tf.bias_analyzer import BiasAnalyzer
 
 app = Flask(__name__)
+bias_analyzer = BiasAnalyzer()
 
 @app.route('/')
 def index():
@@ -12,17 +13,26 @@ def index():
 
 @app.route('/score', methods=['POST'])
 def get_score():
-    data = request.get_json()
-    print('received data:', data)
-    return jsonify({ 'score': random_score() })
+    data = request.json
+    if not data:
+        return 'Error: no body in request!', 500
+    elif 'text' not in data:
+        return 'Error: data needs text attrib', 500
+    elif 'source' not in data:
+        return 'Error: data needs source attrib', 500
+    # Get text from request
+    text = data['text']
+    src_url = data['source']
+    score, _ = bias_analyzer.get_article_bias(src_url, text)
+    return jsonify({ 'score': score })
 
 @app.route('/random_score', methods=['GET', 'POST'])
 def get_random_score():
     return jsonify({ 'score': random_score() })
 
 def random_score():
-	sign = -1 if random() < 0.5 else 1
-	return random() * sign
+    sign = -1 if random() < 0.5 else 1
+    return random() * sign
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0')
