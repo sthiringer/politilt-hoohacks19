@@ -14,6 +14,7 @@ def score():
     print('received data:', data)
     return jsonify({ 'score': random_score() })
 
+@app.route('/random_score', methods=['GET', 'POST'])
 def random_score():
 	sign = -1 if random() < 0.5 else 1
 	return random() * sign
