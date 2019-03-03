@@ -55,8 +55,15 @@ class BiasAnalyzer(object):
 			self.clf = pickle.load(f)
 		#f.close()
 
+	def get_article_bias(self, article):
+		sentences = content_to_sentences(article)
+		print('sentences:', sentences)
+		bias = self.get_paragraph_bias(sentences)
+		print('bias:', bias)
+		return bias
+
 	# @paragraphs is meant to be the output of the article_crawler
-	def get_article_bias(self, paragraphs):
+	def get_paragraph_bias(self, paragraphs):
 		# for each paragraph, get its bias vector
 
 		total_bias = [0,0,0]
@@ -81,9 +88,8 @@ class BiasAnalyzer(object):
 			total_dict.update(p_dict)
 
 		# so far, total_bias is [average lib bias per sentence, average cons bias per sentence, num neu sentences]
-		# i think it should also return a dictionary of each sentence mapped to its bias vec
 
-		return total_bias, total_dict
+		return total_bias
 
 	def get_paragraph_bias(self, sentences):
 
@@ -415,3 +421,33 @@ class BiasAnalyzer(object):
 
 
 		# after the for loop, train the SVM and pickle it
+
+
+''' Converts some content string to a list of lists of sentences. '''
+def content_to_sentences(content):
+	# now we have cleaned up the raw text; split into paragraphs
+	paragraphs = content.split('\n')
+	temp = []
+
+	for paragraph in paragraphs:
+		if len(paragraph) != 0:
+			temp.append(paragraph)
+
+	paragraphs = temp
+
+	# now we want to split each paragraph into sentences
+	temp = []
+
+	for paragraph in paragraphs:
+		sentences = paragraph.split('.')
+		temp2 = []
+
+		for sentence in sentences:
+			sentence = sentence.strip()
+			if len(sentence) != 0:
+				temp2.append(sentence)
+
+		sentences = temp2
+		temp.append(sentences)
+
+	return temp

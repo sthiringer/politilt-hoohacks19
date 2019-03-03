@@ -22,7 +22,7 @@ for url in urls:
 print('initializing bias analyzer')
 start_time = time.time()
 #analyzer = BiasAnalyzer()
-analyzer = BiasAnalyzer(withSVM=True)
+analyzer = BiasAnalyzer(withSVM=False) # SVM?
 print('done')
 print(str(time.time() - start_time))
 
@@ -34,7 +34,7 @@ totaldict = {}
 for url in urls:
 	a = analyzer.get_article_bias(paragraphs[url])
 	print('a:',a)
-	totalbias[url], totaldict[url] = analyzer.get_article_bias(paragraphs[url])
+	totalbias[url], totaldict[url] = a
 print('done getting bias')
 print(str(time.time() - start_time))
 for url in urls:
