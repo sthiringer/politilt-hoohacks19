@@ -75,7 +75,7 @@ chrome.runtime.onMessage.addListener( function gotMessage( message, sender, send
 			"border-left":"10px solid transparent",
 			"border-right":"10px solid transparent",
 			"border-top":"25px solid",
-			"left":biasString,
+			"left":"59%",
 			"bottom":"50px",
 			"width":"10px",
 			"position":"absolute"
@@ -108,6 +108,8 @@ chrome.runtime.onMessage.addListener( function gotMessage( message, sender, send
 		$('#close').click(function(){
 			$('#myModal').css({"display":"none"})
 		})
+
+		$( "#triangledown" ).animate( { left: biasString }, 1500 );
 
 		
 
