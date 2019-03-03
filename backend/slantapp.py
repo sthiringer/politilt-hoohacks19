@@ -8,7 +8,6 @@ from debug_bias_analyzer import DebugBiasAnalyzer
 app = Flask(__name__)
 
 
-
 APP_DEBUG_MODE = True
 
 if APP_DEBUG_MODE:
