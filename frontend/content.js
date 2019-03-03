@@ -17,9 +17,9 @@ chrome.runtime.onMessage.addListener( function gotMessage( message, sender, send
 
 		var div1 = $("div:first");
 		console.log( div1 );
-		div1.insertAdjacentHTML( 'beforebegin', '<div class="slantDiv"><div class="newDiv">Text</div></div>' );
-		var slantDiv = $("div:first");
-		slantDiv.style.color = 'FF00FF';
+		$('<div class="slantDiv"></div>').insertBefore( div1 );
+		var slantDiv = $(".slantDiv")[ 0 ];
+		console.log( slantDiv );
 		slantDiv.style.height = '100px';
 
 
