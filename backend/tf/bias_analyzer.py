@@ -12,6 +12,78 @@ from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 import pickle
 import time
 
+class BiasScore:
+	def __init__(self, nn_bias, nn_similarity, sentiment):
+		self.nn_bias = nn_bias
+		self.nn_similarity = nn_similarity
+		self.sentiment = sentiment
+
+	def intensity(self):
+			# bias_vec = [sentiment_score, nn_similarity, bias_score]	
+		# this computes both the bias direction and intensity
+		# ....hopefully lol
+
+		# logic: sentiment multiplied by bias score will give us
+		# the correct actual bias; i.e. if a sentence is scored
+		# similar to a conservative sentence, but is actually negatively
+		# talking about the conservative side, then it should be 
+		# treated as a liberal bias --> neg * neg = pos = liberal
+
+		# multiply by nn_similarity because the less similar it is to 
+		# one of our biased sentences, the less we want it to weigh in
+		# the aggregate score
+		bias_intensity = self.nn_similarity * self.nn_bias
+
+		# we may want to threshold the sentiment score
+		# because if it's only slightly negative, it might just be
+		# due to evaluation inaccuracies
+
+		# this value puts a maximum cap on how much the sentiment score can
+		# influence the bias score's magnitude
+		# i.e. sentiment value can reduce the weight of the bias score by 
+		# at most 2/3
+		magnitude_cap = 0.33
+
+		# this value is a threshold for determining when a sentiment score
+		# is intense enough to influence the bias direction
+		sentiment_thresh = 0.4
+
+		# this value is a threshold that basically says: if the sentence is REALLY
+		# similar to one of our dataset sentences, then ignore what the sentiment
+		# score is and just continue
+		semantic_thresh = 0.75
+
+		'''
+		if abs(bias_vec[1]) < semantic_thresh:
+			if abs(bias_vec[0]) > magnitude_cap:
+				if abs(bias_vec[0]) > sentiment_thresh:
+					bias_intensity = bias_intensity*bias_vec[0]
+				else:
+					bias_intensity = bias_intensity*abs(bias_vec[0])
+		'''
+		if abs(self.nn_similarity) < semantic_thresh:
+			if abs(self.nn_bias) < magnitude_cap:
+				if self.nn_bias < 0:
+					self.nn_bias = -0.33
+				else:
+					self.nn_bias = 0.33
+
+			if abs(self.nn_bias) > sentiment_thresh:
+				bias_intensity = bias_intensity * self.sentiment
+			else:
+				bias_intensity = bias_intensity * abs(self.sentiment)
+
+
+		# rationale: we dont want a sentence's bias index to be drastically reduced just because
+		# there isnt much sentiment detected. likewise, we dont want its bias sign flipped just
+		# because it's 33% positive or negative, so the threshold for flipping is raised to ensure
+		# that only strongly toned sentiments have an impact on the direction of the bias
+
+		# however, if a sentence is deemed to be extremely similar (semantically) to a dataset sentence
+		# then completely ignore the sentiment score and move on
+
+		return bias_intensity
+
 class BiasAnalyzer(object):
 	def __init__(self, withSVM=False):
 		[lib, con, neu] = pickle.load(open('corpus.pkl', 'rb'))
@@ -38,7 +110,7 @@ class BiasAnalyzer(object):
 
 		#f = open('skipthoughts.pkl', 'rb')
 		# right now, we're using a unidirectional skip model;
-		# we can try the bidirectional model later
+		# we can try the bidirectional model from the tutorial later
 		VOCAB_FILE = "./tf/pretrained/skip_thoughts_uni_2017_02_02/vocab.txt"
 		EMBEDDING_MATRIX_FILE = "./tf/pretrained/skip_thoughts_uni_2017_02_02/embeddings.npy"
 		CHECKPOINT_PATH = "./tf/pretrained/skip_thoughts_uni_2017_02_02/model.ckpt-501424"
@@ -50,17 +122,22 @@ class BiasAnalyzer(object):
 		self.clf = None
 
 		if withSVM:
-			print('using the SVM!')
+			print('using SVM!')
 			f = open('./svm.pkl', 'rb')
 			self.clf = pickle.load(f)
 		#f.close()
 
 	def get_article_bias(self, article):
-		sentences = content_to_sentences(article)
-		print('sentences:', sentences)
-		bias = self.get_paragraph_bias(sentences)
-		print('bias:', bias)
-		return bias
+		sentences_list = content_to_sentences_list(article)
+		net_bias = []
+		bias_scores = []
+		net_sentence_bias = {}
+		for sentence in sentences_list:
+			bias, sentence_bias = self.get_paragraph_bias(sentence)
+			bias_scores += bias
+			net_sentence_bias.update(sentence_bias)
+			net_bias.extend([bias[0], bias[1]])
+		return np.mean(net_bias), net_sentence_bias
 
 	# @paragraphs is meant to be the output of the article_crawler
 	def get_paragraph_bias(self, paragraphs):
@@ -97,19 +174,18 @@ class BiasAnalyzer(object):
 		# format is [lib_score, con_score, neu_score]
 		# lib_score and con_score are similarly aggregated, while
 		# neu_score is a count of how many neutral sentences are found
-		aggregate_score = [0, 0, 0]
+		aggregate_scores = [0, 0, 0]
 
 		temp = list(self.data)
 		self.data = list(sentences)
 
 		self.blacklist = list(sentences)
 		bound = len(self.blacklist)+2
-		print('bound ' + str(bound))
 		self.data.extend(temp)
 
 		self.data_encodings = self.encoder.encode(self.data)
 
-		ret_dict = dict();
+		bias_of_sentences = dict()
 
 		index = 0
 		for sentence in sentences:
@@ -117,104 +193,38 @@ class BiasAnalyzer(object):
 			# for each of the sentences in results, get the one with
 			# the best semantic similarity
 
-			# bound ensures that of the NNs found, at least 1 will not be one of the current sentences we're looking for
-			results = self.get_largest_nn(index,num=bound)
-			#print(results)
+			# bound ensures that of the nearest-neighbors found, at least 1 will not be one of the current sentences we're looking for
+			nn_sentence, nn_similarity = self.get_largest_nn(index,num=bound)
 
 			# get compound sentiment score
 			sentiment_score = self.sentiment.polarity_scores(sentence)['compound']
 
 			# then use the bias_dict to get its political leaning
-			bias_score = self.bias_dict[results[0]]
+			nn_bias_score = self.bias_dict[nn_sentence]
 
-			# final political bias vector:
-			bias_vec = [sentiment_score, results[1], bias_score]
+			# final political bias score:
+			bias_score = BiasScore(nn_bias_score, nn_similarity, sentiment_score)
+			bias_intensity = bias_score.intensity()
 
-			print(sentence, 'has a bias vector of:')
-			print(bias_vec)
+			# map sentence to its bias intensity
+			bias_of_sentences[sentence] = bias_intensity
 
-			# this computes both the bias direction and intensity
-			# ....hopefully lol
-
-			# logic: sentiment multiplied by bias score will give us
-			# the correct actual bias; i.e. if a sentence is scored
-			# similar to a conservative sentence, but is actually negatively
-			# talking about the conservative side, then it should be 
-			# treated as a liberal bias --> neg * neg = pos = liberal
-
-			# multiply by bias_vec[1] because the less similar it is to 
-			# one of our biased sentences, the less we want it to weigh in
-			# the aggregate score
-			bias_intensity = bias_vec[1]*bias_vec[2]
-
-			# we may want to threshold the sentiment score
-			# because if it's only slightly negative, it might just be
-			# due to evaluation inaccuracies
-
-			# this value puts a maximum cap on how much the sentiment score can
-			# influence the bias score's magnitude
-			# i.e. sentiment value can reduce the weight of the bias score by 
-			# at most 2/3
-			magnitude_cap = 0.33
-
-			# this value is a threshold for determining when a sentiment score
-			# is intense enough to influence the bias direction
-			sentiment_thresh = 0.4
-
-			# this value is a threshold that basically says: if the sentence is REALLY
-			# similar to one of our dataset sentences, then ignore what the sentiment
-			# score is and just continue
-			semantic_thresh = 0.75
-
-			'''
-			if abs(bias_vec[1]) < semantic_thresh:
-				if abs(bias_vec[0]) > magnitude_cap:
-					if abs(bias_vec[0]) > sentiment_thresh:
-						bias_intensity = bias_intensity*bias_vec[0]
-					else:
-						bias_intensity = bias_intensity*abs(bias_vec[0])
-			'''
-			if abs(bias_vec[1]) < semantic_thresh:
-				if abs(bias_vec[0]) < magnitude_cap:
-					if bias_vec[0] < 0:
-						bias_vec[0] = -0.33
-					else:
-						bias_vec[0] = 0.33
-
-				if abs(bias_vec[0]) > sentiment_thresh:
-					bias_intensity = bias_intensity*bias_vec[0]
-				else:
-					bias_intensity = bias_intensity*abs(bias_vec[0])
-
-
-
-			# rationale: we dont want a sentence's bias index to be drastically reduced just because
-			# there isnt much sentiment detected. likewise, we dont want its bias sign flipped just
-			# because it's 33% positive or negative, so the threshold for flipping is raised to ensure
-			# that only strongly toned sentiments have an impact on the direction of the bias
-
-			# however, if a sentence is deemed to be extremely similar (semantically) to a dataset sentence
-			# then completely ignore the sentiment score and move on
+			index += 1
 
 			# add to aggregate score
 			if bias_intensity > 0:
-				aggregate_score[0] += bias_intensity
+				aggregate_scores[0] += bias_intensity
 			elif bias_intensity < 0:
-				aggregate_score[1] += bias_intensity
+				aggregate_scores[1] += bias_intensity
 			else:
-				aggregate_score[2] += 1
-
-			# map sentence to its bias intensity
-			ret_dict[sentence] = bias_intensity
-
-			index += 1
+				aggregate_scores[2] += 1
 
 		# after we're done, reset self.data to its original value
 		self.data = temp
 		self.data_encodings = []
 		self.blacklist = []
-		print(aggregate_score)
-		return aggregate_score, ret_dict
+
+		return aggregate_scores, bias_of_sentences
 
 	################################################################
 	#
@@ -226,14 +236,15 @@ class BiasAnalyzer(object):
 
 	def get_article_bias_with_SVM(self, paragraphs):
 		# for each paragraph, get its bias vector
+		sentences_list = content_to_sentences_list(article)
 
 		total_bias = [0,0,0]
 		total_length = 0
 
-		for paragraph in paragraphs:
+		for paragraph in sentences_list:
 			total_length += len(paragraph)
 
-		for paragraph in paragraphs:
+		for paragraph in sentences_list:
 			p_bias = self.get_paragraph_bias_with_SVM(paragraph)
 
 			# weight it by proportion to total length
@@ -252,14 +263,14 @@ class BiasAnalyzer(object):
 		# format is [lib_score, con_score, neu_score]
 		# lib_score and con_score are similarly aggregated, while
 		# neu_score is a count of how many neutral sentences are found
-		aggregate_score = [0, 0, 0]
+		aggregate_scores = [0, 0, 0]
 
 		temp = list(self.data)
 		self.data = list(sentences)
 
 		self.blacklist = list(sentences)
 		bound = len(self.blacklist)+2
-		print('bound ' + str(bound))
+
 		self.data.extend(temp)
 
 		self.data_encodings = self.encoder.encode(self.data)
@@ -282,9 +293,6 @@ class BiasAnalyzer(object):
 
 			# final political bias vector:
 			bias_vec = [sentiment_score, results[1], bias_score]
-
-			print(sentence, 'has a bias vector of:')
-			print(bias_vec)
 
 			# this computes both the bias direction and intensity
 			# ....hopefully lol
@@ -325,11 +333,11 @@ class BiasAnalyzer(object):
 
 			# add to aggregate score
 			if bias_intensity > 0:
-				aggregate_score[0] += bias_intensity
+				aggregate_scores[0] += bias_intensity
 			elif bias_intensity < 0:
-				aggregate_score[1] += bias_intensity
+				aggregate_scores[1] += bias_intensity
 			else:
-				aggregate_score[2] += 1
+				aggregate_scores[2] += 1
 
 			index += 1
 
@@ -337,17 +345,14 @@ class BiasAnalyzer(object):
 		self.data = temp
 		self.data_encodings = []
 		self.blacklist = []
-		print(aggregate_score)
-		return aggregate_score
+		print(aggregate_scores)
+		return aggregate_scores
 
 	# gets the 5 NN and returns the one with the largest semantic similarity
 	def get_largest_nn(self, ind, num=5):
   		encoding = self.data_encodings[ind]
   		scores = sd.cdist([encoding], self.data_encodings, "cosine")[0]
   		sorted_ids = np.argsort(scores)
-  		#print("Sentence:")
-  		#print("", self.data[ind])
-  		#print("\nNearest neighbors:")
   		ret = {}
   		for i in range(1, num + 1):
 			#print(" %d. %s (%.3f)" % (i, self.data[sorted_ids[i]], scores[sorted_ids[i]]))
@@ -360,7 +365,7 @@ class BiasAnalyzer(object):
 			if target not in self.blacklist:
 				return [target, key]
 
-		print('IF YOURE HERE, SOMETHING REALLY BAD HAPPENED!!')
+		print('If you\'re here, something really bad happened!')
 		#this is a list containing the sentence and its semantic similarity
 		# key should be the largest value
 		return None
@@ -424,30 +429,18 @@ class BiasAnalyzer(object):
 
 
 ''' Converts some content string to a list of lists of sentences. '''
-def content_to_sentences(content):
+def content_to_sentences_list(content):
 	# now we have cleaned up the raw text; split into paragraphs
-	paragraphs = content.split('\n')
-	temp = []
-
-	for paragraph in paragraphs:
-		if len(paragraph) != 0:
-			temp.append(paragraph)
-
-	paragraphs = temp
+	paragraphs = [p for p in content.split('\n') if len(p) > 0]
 
 	# now we want to split each paragraph into sentences
-	temp = []
+	sentences_list = []
 
 	for paragraph in paragraphs:
-		sentences = paragraph.split('.')
-		temp2 = []
+		sentences = [s.strip() for s in paragraph.split('.') if len(s) > 0]
 
-		for sentence in sentences:
-			sentence = sentence.strip()
-			if len(sentence) != 0:
-				temp2.append(sentence)
-
-		sentences = temp2
-		temp.append(sentences)
-
-	return temp
+		sentences_list.append(sentences)
+	# print('content:', content)
+	# print('\nsentencelist:', sentences_list)
+	# exit(-1)
+	return sentences_list
