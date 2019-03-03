@@ -15,12 +15,49 @@ chrome.runtime.onMessage.addListener( function gotMessage( message, sender, send
 		// BAD SOLUTION
 		//document.body.style.marginTop = "75px";
 
+		// GOOD SOLUTION
+
 		var div1 = $("div:first");
 		console.log( div1 );
+		// Our image
+		var ImgURL = chrome.extension.getURL( 'SlantLogo.png' );
+		// Creates a new div before their first div
 		$('<div class="slantDiv"></div>').insertBefore( div1 );
 		var slantDiv = $(".slantDiv")[ 0 ];
+		$( slantDiv ).css( { "position":"relative" } );
 		console.log( slantDiv );
-		slantDiv.style.height = '100px';
+		// Animates our new div to slide down (looks nice)
+		$( slantDiv ).prepend($('<div>', {id:'bar'} ) );
+		$( slantDiv ).prepend($('<img>', {id:'SlantLogo', src:ImgURL} ) );
+		
+
+		//Style logo
+		$( "#SlantLogo" ).attr( 'width', '200' );
+		$( "#SlantLogo" ).attr( 'align', 'left' ); 
+		$( "#SlantLogo" ).attr( 'hspace', '50' );
+		$( "#SlantLogo" ).attr( 'border', '50' );
+		$( "#SlantLogo" ).css( { 
+			"position":"absolute",
+			"top":"5%",
+			"left":"3%"
+		})
+
+		//Style bias scale
+		$( "#bar" ).css({
+		 "width":"75%",
+		 "height":"35px", 
+		 "background-image":"linear-gradient(to right, rgb(11, 36, 251), rgb(252, 13, 27)", 
+		 "border-radius":"7px",
+		 "position":"absolute",
+		 "top":"62%",
+		 "left":"22%"
+		})
+
+		//$('<img src="SlantLogo.png">').appendTo( slantDiv );
+
+
+		$( slantDiv ).animate( {height: '150px' } );
+
 
 
 
