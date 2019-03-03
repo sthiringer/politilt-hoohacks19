@@ -79,6 +79,10 @@ var onGetScore = function(data){
 	    'transform': 'translateX(-50%) scaleY(1.25)'
 	});
 
+	$( slantDiv ).css({
+		'font-family': 'monospace'
+	});
+
 
 	$('#saysWhoButton').html("Says who?")
 
@@ -109,7 +113,8 @@ var onGetScore = function(data){
 	$( "#response" ).css( { 
 		'text-align': 'center',
 		'font-size': '32px',
-	    'margin-top': '20px'
+	    'margin-top': '20px',
+	    'font-weight': '400',
 	})
 
 
@@ -142,13 +147,13 @@ var onGetScore = function(data){
 
 	//Style bias scale
 	$( "#bar" ).css({
-	 "width":"75%",
-	 "height":"35px", 
-	 "background-image":"linear-gradient(to right, rgb(11, 36, 251), rgb(252, 13, 27)", 
-	 "border-radius":"7px",
-	 "left":"22%",
-	 "position":"absolute",
-	 "bottom":"30px"
+		"width":"75%",
+		"height":"35px", 
+		"background-image":"linear-gradient(to right, rgb(11, 36, 251), rgb(252, 13, 27)", 
+		"border-radius":"7px",
+		"left":"22%",
+		"position":"absolute",
+		"bottom":"30px"
 	})
 
 	//Style button
@@ -160,7 +165,8 @@ var onGetScore = function(data){
 		"width":"100px",
 		"background-color":"black",	
 		"border-radius":"7px",
-		"color":"white"
+		"color":"white",
+		'font-family': 'monospace'
 	})
 
 	$('#saysWhoButton').click(function(){
