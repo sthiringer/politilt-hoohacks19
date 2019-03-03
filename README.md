@@ -1,6 +1,3 @@
-# Slant
-
-Inline-style: 
 ![Slant Logo](logo.svg)
 
 
