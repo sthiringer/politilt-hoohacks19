@@ -6,10 +6,16 @@ from tf.bias_analyzer import BiasAnalyzer
 from debug_bias_analyzer import DebugBiasAnalyzer
 
 app = Flask(__name__)
-bias_analyzer = BiasAnalyzer()
-debug_bias_analyzer = DebugBiasAnalyzer()
+
+
 
 APP_DEBUG_MODE = True
+
+if APP_DEBUG_MODE:
+	bias_analyzer = DebugBiasAnalyzer()
+else:
+	bias_analyzer = BiasAnalyzer()
+	
 
 @app.route('/')
 def index():
@@ -28,7 +34,7 @@ def get_score():
     text = data['text']
     src_url = data['source']
     if APP_DEBUG_MODE:
-        score = debug_bias_analyzer.score(src_url)
+        score = bias_analyzer.score(src_url)
     else:
         score, _ = bias_analyzer.get_article_bias(src_url, text)
     return jsonify({ 'score': score })
