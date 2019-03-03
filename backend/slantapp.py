@@ -5,6 +5,13 @@ from random import random
 from tf.bias_analyzer import BiasAnalyzer
 from debug_bias_analyzer import DebugBiasAnalyzer
 
+import redis
+
+cache = redis.Redis(
+    host='localhost',
+    port=6379, 
+    password='')
+
 app = Flask(__name__)
 
 
@@ -32,10 +39,18 @@ def get_score():
     # Get text from request
     text = data['text']
     src_url = data['source']
+    # check cache
+    if cache.exists(src_url):
+    	score = cache.get(src_url)
+    	return jsonify({ 'score': score })
+    # otherwise, go to the model
     if APP_DEBUG_MODE:
         score = bias_analyzer.score(src_url)
     else:
         score, _ = bias_analyzer.get_article_bias(src_url, text)
+    # cache score
+    cache.set(src_url, score)
+    # return
     return jsonify({ 'score': score })
 
 @app.route('/random_score', methods=['GET', 'POST'])
