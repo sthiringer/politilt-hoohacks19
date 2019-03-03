@@ -115,7 +115,8 @@ var onGetScore = function(data){
 		'font-size': '32px',
 	    'margin-top': '20px',
 	    'font-weight': '400',
-	})
+		'font-family': 'monospace',
+	});
 
 
 
@@ -130,7 +131,7 @@ var onGetScore = function(data){
 		"position":"absolute",
 		"z-index": 1,
 		"color": "#333"
-	})
+	});
 	
 
 	//Style logo
@@ -143,7 +144,7 @@ var onGetScore = function(data){
 		"height":"auto",
 		"margin":"0",
 		"border":"0"
-	})
+	});
 
 	//Style bias scale
 	$( "#bar" ).css({
@@ -154,7 +155,7 @@ var onGetScore = function(data){
 		"left":"22%",
 		"position":"absolute",
 		"bottom":"30px"
-	})
+	});
 
 	//Style button
 	$('#saysWhoButton').css({
@@ -163,21 +164,21 @@ var onGetScore = function(data){
 		"bottom":"30px",
 		"height":"35px",
 		"width":"110px",
-		"background-color":"black",	
+		"background-color":"#333",	
 		"border-radius":"7px",
 		"color":"white",
 		'font-family': 'monospace'
-	})
+	});
 
 	$('#saysWhoButton').click(function(){
 		window.location.href = 'https://github.com/sthiringer/slant'
 	}).hover(function() {
 		$(this).css({'cursor':'pointer'});
-	})
+	});
 
 	$('#close').click(function(){
 		$('#myModal').css({"display":"none"})
-	})
+	});
 
 	$( "#triangledown" ).animate( { left: biasString }, 1500 );
 
