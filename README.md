@@ -1,5 +1,8 @@
-![Slant Logo](logo.svg)
-
+<br><br>
+<p align="center">
+	<img src="logo.svg" alt="Slant logo">
+</p>
+<br><br>
 
 ## Slant Frontend
 
