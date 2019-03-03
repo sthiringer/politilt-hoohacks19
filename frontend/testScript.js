@@ -1,3 +1,7 @@
+/*
+	OnClick function for extension popup, triggers message to main document
+*/
+
 document.getElementById("analyze").onclick = function() {myFunction()};
 
 function myFunction() {

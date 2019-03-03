@@ -1,21 +1,22 @@
+/*
+Content script for slant browser extension
+*/
+
 $(document).ready( function() { 
 
-console.log( "Chrome extension go" );
-
-
-
 chrome.runtime.onMessage.addListener( function gotMessage( message, sender, sendResponse ) {
-	//Send HTTP request with this stuff to the server
+		//Send HTTP request with this stuff to the server
 		var raw_HTML = document.documentElement.outerHTML;
-		console.log(raw_HTML);
 
 		$.post("https://theslantapp.com/score", raw_HTML, function(data){
 
 			var div1 = $("div:first");
 			console.log( div1 );
-			// Our image
+
+			// Our logo
 			var ImgURL = chrome.extension.getURL( 'logo.svg' );
-			// Creates a new div before their first div
+			
+			//Create HTML structure for modal
 			$('<style>body {font-family: Arial, Helvetica, sans-serif;}/* The Modal (background) */.modal { /* Hidden by default */position: fixed; /* Stay in place */z-index: 999999; /* Sit on top */padding-top: 100px; /* Location of the box */left: 0;top: 0;width: 100%; /* Full width */height: 100%; /* Full height */overflow: auto; /* Enable scroll if needed */background-color: rgb(0,0,0); /* Fallback color */background-color: rgba(0,0,0,0.4); /* Black w/ opacity */}/* Modal Content */.modal-content {background-color: #fefefe;margin: auto;padding: 20px;border: 1px solid #888;width: 80%;height: 200px;position:relative}/* The Close Button */.close {color: #aaaaaa;float: right;font-size: 28px;font-weight: bold;}.close:hover,.close:focus {color: #000;text-decoration: none;cursor: pointer;}</style><div id="myModal" class="modal"><div class="modal-content"><span id="close">&times;</span></div></div>').insertBefore( div1 );
 			$('#close').css({
 				"font-size":"30px",
@@ -29,12 +30,14 @@ chrome.runtime.onMessage.addListener( function gotMessage( message, sender, send
 			var slantDiv = $("#myModal > .modal-content");
 			$( slantDiv ).css( { "position":"relative", "width":"1100px" } );
 			console.log( slantDiv );
+
 			// Animates our new div to slide down (looks nice)
 			$( slantDiv ).prepend($('<div>', {id:'triangledown'} ) );
 			$( slantDiv ).prepend($('<div>', {id:'bar'} ) );
 			$( slantDiv ).prepend($('<img>', {id:'SlantLogo', src:ImgURL} ) );
 			$( slantDiv ).prepend($('<p>', {id:'response'} ) );
 
+			//Bias calculations
 			var bias = 59 + ( data.score * 36 );
 			var biasString = bias + "%";
 
@@ -81,7 +84,7 @@ chrome.runtime.onMessage.addListener( function gotMessage( message, sender, send
 			$( "#SlantLogo" ).attr( 'border', '50' );
 			$("#SlantLogo ").css({
 				"width":"200px", 
-				"height":"auto", 
+				"height":"auto",
 				"margin":"0",
 				"border":"0"
 			})

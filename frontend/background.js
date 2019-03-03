@@ -1,4 +1,6 @@
-console.log( "Background Script Running" );
+/*
+Background script for slant browser extension
+*/
 
 chrome.browserAction.onClicked.addListener( buttonClicked );
 
