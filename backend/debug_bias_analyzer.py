@@ -1,7 +1,7 @@
 from time import sleep
 from random import random
 
-l_tags = ['cnn.com', 'dailyprogress.com', 'vox.com', 'nytimes.com', 'washingtonpost.com']
+l_tags = ['cnn.com', 'dailyprogress.com', 'vox.com', 'nytimes.com', 'washingtonpost.com', 'buzzfeed.com']
 c_tags = ['foxnews.com', 'breitbart.com', 'dailywire.com']
 
 SCORE_BREADTH = 2.0
