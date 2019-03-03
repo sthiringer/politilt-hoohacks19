@@ -2,6 +2,9 @@ document.getElementById("analyze").onclick = function() {myFunction()};
 
 function myFunction() {
 
+
+
+
 	console.log( "poopy 3" );
 
 	let params = {
@@ -12,6 +15,8 @@ function myFunction() {
 	chrome.tabs.query( params, gotTabs );
 
 	function gotTabs( tabs ) {
+
+		
 		let msg = {
 			txt: "hello"
 		}
@@ -23,3 +28,5 @@ function myFunction() {
 
 	
 }
+
+

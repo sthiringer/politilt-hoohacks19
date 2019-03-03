@@ -22,13 +22,34 @@ chrome.runtime.onMessage.addListener( function gotMessage( message, sender, send
 		// Our image
 		var ImgURL = chrome.extension.getURL( 'SlantLogo.png' );
 		// Creates a new div before their first div
-		$('<div class="slantDiv"></div>').insertBefore( div1 );
-		var slantDiv = $(".slantDiv")[ 0 ];
+		$('<style>body {font-family: Arial, Helvetica, sans-serif;}/* The Modal (background) */.modal { /* Hidden by default */position: fixed; /* Stay in place */z-index: 999999; /* Sit on top */padding-top: 100px; /* Location of the box */left: 0;top: 0;width: 100%; /* Full width */height: 100%; /* Full height */overflow: auto; /* Enable scroll if needed */background-color: rgb(0,0,0); /* Fallback color */background-color: rgba(0,0,0,0.4); /* Black w/ opacity */}/* Modal Content */.modal-content {background-color: #fefefe;margin: auto;padding: 20px;border: 1px solid #888;width: 80%;height: 200px;position:relative}/* The Close Button */.close {color: #aaaaaa;float: right;font-size: 28px;font-weight: bold;}.close:hover,.close:focus {color: #000;text-decoration: none;cursor: pointer;}</style><div id="myModal" class="modal"><div class="modal-content"><span id="close">&times;</span></div></div>').insertBefore( div1 );
+		$('#close').css({
+			"font-size":"30px",
+			"float":"right"
+		})
+		$('#close').hover(function() {
+			$(this).css({'cursor':'pointer'});
+		})
+
+
+		var slantDiv = $("#myModal > .modal-content");
 		$( slantDiv ).css( { "position":"relative" } );
 		console.log( slantDiv );
 		// Animates our new div to slide down (looks nice)
+		$( slantDiv ).prepend($('<div>', {id:'triangledown'} ) );
 		$( slantDiv ).prepend($('<div>', {id:'bar'} ) );
 		$( slantDiv ).prepend($('<img>', {id:'SlantLogo', src:ImgURL} ) );
+
+		//Style triangledown
+		$( "#triangledown" ).css( { 
+			"border-left":"10px solid transparent",
+			"border-right":"10px solid transparent",
+			"border-top":"25px solid",
+			"left":"59%",
+			"top":"52%",
+			"width":"10px",
+			"position":"absolute"
+		})
 		
 
 		//Style logo
@@ -36,11 +57,6 @@ chrome.runtime.onMessage.addListener( function gotMessage( message, sender, send
 		$( "#SlantLogo" ).attr( 'align', 'left' ); 
 		$( "#SlantLogo" ).attr( 'hspace', '50' );
 		$( "#SlantLogo" ).attr( 'border', '50' );
-		$( "#SlantLogo" ).css( { 
-			"position":"absolute",
-			"top":"5%",
-			"left":"3%"
-		})
 
 		//Style bias scale
 		$( "#bar" ).css({
@@ -48,15 +64,20 @@ chrome.runtime.onMessage.addListener( function gotMessage( message, sender, send
 		 "height":"35px", 
 		 "background-image":"linear-gradient(to right, rgb(11, 36, 251), rgb(252, 13, 27)", 
 		 "border-radius":"7px",
+		 "left":"22%",
 		 "position":"absolute",
-		 "top":"62%",
-		 "left":"22%"
+		 "margin-top":"90px",
+		 "margin-right":"0px"
+		})
+
+		$('#close').click(function(){
+			$('#myModal').css({"display":"none"})
 		})
 
 		//$('<img src="SlantLogo.png">').appendTo( slantDiv );
 
 
-		$( slantDiv ).animate( {height: '150px' } );
+		// $( slantDiv ).animate( {height: '150px' } )
 
 
 
