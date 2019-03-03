@@ -4,4 +4,5 @@ nltk
 requests
 sklearn
 tensorflow
+uwsgi
 vaderSentiment==2.5

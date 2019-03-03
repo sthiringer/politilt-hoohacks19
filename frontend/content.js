@@ -22,7 +22,7 @@ chrome.runtime.onMessage.addListener( function gotMessage( message, sender, send
 		var div1 = $("div:first");
 		console.log( div1 );
 		// Our image
-		var ImgURL = chrome.extension.getURL( 'SlantLogo.png' );
+		var ImgURL = chrome.extension.getURL( 'logo.svg' );
 		// Creates a new div before their first div
 		$('<style>body {font-family: Arial, Helvetica, sans-serif;}/* The Modal (background) */.modal { /* Hidden by default */position: fixed; /* Stay in place */z-index: 999999; /* Sit on top */padding-top: 100px; /* Location of the box */left: 0;top: 0;width: 100%; /* Full width */height: 100%; /* Full height */overflow: auto; /* Enable scroll if needed */background-color: rgb(0,0,0); /* Fallback color */background-color: rgba(0,0,0,0.4); /* Black w/ opacity */}/* Modal Content */.modal-content {background-color: #fefefe;margin: auto;padding: 20px;border: 1px solid #888;width: 80%;height: 200px;position:relative}/* The Close Button */.close {color: #aaaaaa;float: right;font-size: 28px;font-weight: bold;}.close:hover,.close:focus {color: #000;text-decoration: none;cursor: pointer;}</style><div id="myModal" class="modal"><div class="modal-content"><span id="close">&times;</span></div></div>').insertBefore( div1 );
 		$('#close').css({
@@ -35,7 +35,7 @@ chrome.runtime.onMessage.addListener( function gotMessage( message, sender, send
 
 
 		var slantDiv = $("#myModal > .modal-content");
-		$( slantDiv ).css( { "position":"relative" } );
+		$( slantDiv ).css( { "position":"relative", "width":"1100px" } );
 		console.log( slantDiv );
 		// Animates our new div to slide down (looks nice)
 		$( slantDiv ).prepend($('<div>', {id:'triangledown'} ) );
@@ -76,7 +76,7 @@ chrome.runtime.onMessage.addListener( function gotMessage( message, sender, send
 			"border-right":"10px solid transparent",
 			"border-top":"25px solid",
 			"left":biasString,
-			"top":"52%",
+			"bottom":"50px",
 			"width":"10px",
 			"position":"absolute"
 		})
@@ -87,6 +87,12 @@ chrome.runtime.onMessage.addListener( function gotMessage( message, sender, send
 		$( "#SlantLogo" ).attr( 'align', 'left' ); 
 		$( "#SlantLogo" ).attr( 'hspace', '50' );
 		$( "#SlantLogo" ).attr( 'border', '50' );
+		$("#SlantLogo ").css({
+			"width":"200px", 
+			"height":"auto", 
+			"margin":"0",
+			"border":"0"
+		})
 
 		//Style bias scale
 		$( "#bar" ).css({
@@ -96,8 +102,7 @@ chrome.runtime.onMessage.addListener( function gotMessage( message, sender, send
 		 "border-radius":"7px",
 		 "left":"22%",
 		 "position":"absolute",
-		 "margin-top":"90px",
-		 "margin-right":"0px"
+		 "bottom":"30px"
 		})
 
 		$('#close').click(function(){

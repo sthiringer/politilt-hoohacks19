@@ -34,6 +34,9 @@ If you have the debugger disabled or trust the users on your network, you can ma
 
 flask run --host=0.0.0.0
 
+### Production
+
+We configured the app for production by following this wonderful tutorial: [How To Serve Flask Applications with uWSGI and Nginx on Ubuntu 18.04](https://www.digitalocean.com/community/tutorials/how-to-serve-flask-applications-with-uswgi-and-nginx-on-ubuntu-18-04).
 
 ### Inspiration
 

@@ -5,7 +5,8 @@
  "version": "1.00",
  "author": "Jack Morris, Steve Thiringer, James Childress",
  "web_accessible_resources": [
- 	"SlantLogo.png"
+ 	"SlantLogo.png",
+ 	"logo.svg"
  ],
  "content_scripts": [
  	{
