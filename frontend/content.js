@@ -7,7 +7,9 @@ $(document).ready( function() {
 
 chrome.runtime.onMessage.addListener( function gotMessage( message, sender, sendResponse ) {
 		//Send HTTP request with this stuff to the server
-		var raw_HTML = document.documentElement.outerHTML;
+		var raw_HTML = $('body').html();
+
+		console.log('len:', raw_HTML.length);
 		var url = window.location.href;
 
 		let data_obj = {"text":raw_HTML, "source":url};
@@ -37,7 +39,17 @@ var onGetScore = function(data){
 	var ImgURL = chrome.extension.getURL( 'logo.svg' );
 	
 	//Create HTML structure for modal
-	$('<style>body {font-family: Arial, Helvetica, sans-serif;}/* The Modal (background) */.modal { /* Hidden by default */position: fixed; /* Stay in place */z-index: 999999; /* Sit on top */padding-top: 100px; /* Location of the box */left: 0;top: 0;width: 100%; /* Full width */height: 100%; /* Full height */overflow: auto; /* Enable scroll if needed */background-color: rgb(0,0,0); /* Fallback color */background-color: rgba(0,0,0,0.4); /* Black w/ opacity */}/* Modal Content */.modal-content {background-color: #fefefe;margin: auto;padding: 20px;border: 1px solid #888;width: 80%;height: 200px;position:relative}/* The Close Button */.close {color: #aaaaaa;float: right;font-size: 28px;font-weight: bold;}.close:hover,.close:focus {color: #000;text-decoration: none;cursor: pointer;}</style><div id="myModal" class="modal"><div class="modal-content"><span id="close">&times;</span></div></div>').insertBefore( div1 );
+	let modal_html = `
+	<style>body {font-family: Arial, Helvetica, sans-serif;}/* The Modal (background) */.modal { /* Hidden by default */position: fixed; /* Stay in place */z-index: 999999; /* Sit on top */padding-top: 100px; /* Location of the box */left: 0;top: 0;width: 100%; /* Full width */height: 100%; /* Full height */overflow: auto; /* Enable scroll if needed */background-color: rgb(0,0,0); /* Fallback color */background-color: rgba(0,0,0,0.4); /* Black w/ opacity */}/* Modal Content */.modal-content {background-color: #fefefe;margin: auto;padding: 20px;border: 1px solid #888;width: 80%;height: 200px;position:relative}/* The Close Button */.close {color: #aaaaaa;float: right;font-size: 28px;font-weight: bold;}.close:hover,.close:focus {color: #000;text-decoration: none;cursor: pointer;}</style>
+		<div id="myModal" class="modal">
+			<div class="modal-content">
+				<div id="result"></div>
+				<span id="close">&times;</span>
+			</div>
+		</div>
+	`;
+
+	$(modal_html).insertBefore( div1 );
 	$('#close').css({
 		"font-size":"30px",
 		"float":"right"
@@ -52,11 +64,26 @@ var onGetScore = function(data){
 	console.log( slantDiv );
 
 	// Animates our new div to slide down (looks nice)
-	$( slantDiv ).prepend($('<div>', {id:'triangledown'} ) );
-	$( slantDiv ).prepend($('<div>', {id:'bar'} ) );
-	$( slantDiv ).prepend($('<img>', {id:'SlantLogo', src:ImgURL} ) );
-	$( slantDiv ).prepend($('<p>', {id:'response'} ) );
-	$( slantDiv ).prepend($('<button>', {id:'saysWhoButton'} ) );
+	$( slantDiv ).append($('<div>', {id:'triangledown'} ) );
+	$( slantDiv ).append($('<div>', {id:'bar'} ) );
+	$( slantDiv ).append($('<img>', {id:'SlantLogo', src:ImgURL} ) );
+	$( slantDiv ).append($('<h3>', {id:'response'} ) );
+	$( slantDiv ).append($('<button>', {id:'saysWhoButton'} ) );
+	$('#myModal #bar').html('<div id="my-axis"></div>');
+	$('#myModal #my-axis').css({
+	    'width': '2px',
+	    'background': '#333',
+	    'height': '100%',
+	    'position': 'absolute',
+	    'left': '50%',
+	    'transform': 'translateX(-50%) scaleY(1.25)'
+	});
+
+	$( slantDiv ).css({
+		'font-family': 'monospace'
+	});
+
+
 	$('#saysWhoButton').html("Says who?")
 
 	//Bias calculations
@@ -69,7 +96,7 @@ var onGetScore = function(data){
 	var lor;
 	if ( presentedBias < 0 ) {
 		lor = "left";
-		pBias = ( presentedBias * -1 ) + "%"; 
+		pBias = '-' + ( pBiasTrunc * -1 ) + "%"; 
 	}
 	else if ( presentedBias > 0 ) {
 		lor = "right";
@@ -79,14 +106,17 @@ var onGetScore = function(data){
 		pBias = "extremeley low"
 	}
 
+	let pBiasEl = `<b style="text-decoration:underline">${pBias}</b>`
+
 	//Style response
-	$( "#response" ).append( "This site has a " + pBias + " bias for the " + lor + "." );
+	$( "#response" ).append(`Bias Score: ${pBiasEl}`);
 	$( "#response" ).css( { 
-		"font-size":"18px",
-		"color":"Black",
-		"position":"absolute",
-		"left": "400px"
-	})
+		'text-align': 'center',
+		'font-size': '32px',
+	    'margin-top': '20px',
+	    'font-weight': '400',
+		'font-family': 'monospace',
+	});
 
 
 
@@ -98,8 +128,10 @@ var onGetScore = function(data){
 		"left":"59%",
 		"bottom":"50px",
 		"width":"10px",
-		"position":"absolute"
-	})
+		"position":"absolute",
+		"z-index": 1,
+		"color": "#333"
+	});
 	
 
 	//Style logo
@@ -112,18 +144,18 @@ var onGetScore = function(data){
 		"height":"auto",
 		"margin":"0",
 		"border":"0"
-	})
+	});
 
 	//Style bias scale
 	$( "#bar" ).css({
-	 "width":"75%",
-	 "height":"35px", 
-	 "background-image":"linear-gradient(to right, rgb(11, 36, 251), rgb(252, 13, 27)", 
-	 "border-radius":"7px",
-	 "left":"22%",
-	 "position":"absolute",
-	 "bottom":"30px"
-	})
+		"width":"75%",
+		"height":"35px", 
+		"background-image":"linear-gradient(to right, rgb(11, 36, 251), rgb(252, 13, 27)", 
+		"border-radius":"7px",
+		"left":"22%",
+		"position":"absolute",
+		"bottom":"30px"
+	});
 
 	//Style button
 	$('#saysWhoButton').css({
@@ -131,21 +163,22 @@ var onGetScore = function(data){
 		"left":"50px",
 		"bottom":"30px",
 		"height":"35px",
-		"width":"100px",
-		"background-color":"black",	
+		"width":"110px",
+		"background-color":"#333",	
 		"border-radius":"7px",
-		"color":"white"
-	})
+		"color":"white",
+		'font-family': 'monospace'
+	});
 
 	$('#saysWhoButton').click(function(){
 		window.location.href = 'https://github.com/sthiringer/slant'
 	}).hover(function() {
 		$(this).css({'cursor':'pointer'});
-	})
+	});
 
 	$('#close').click(function(){
 		$('#myModal').css({"display":"none"})
-	})
+	});
 
 	$( "#triangledown" ).animate( { left: biasString }, 1500 );
 
