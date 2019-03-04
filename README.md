@@ -17,6 +17,14 @@ What can we do? Understanding our bias can allow for us to look more objectively
 
 We made our frontend with the Chrome Extensions API.
 
+ <br><br>
+<p align="center">
+  <img src="lib-screenshot.png" alt="Liberal screenshot">
+  <br>
+  <img src="con-screenshot.png" alt="Conservative screenshot">
+</p>
+<br><br>
+
 ## Slant Backend
 
 ### Installing Dependencies
